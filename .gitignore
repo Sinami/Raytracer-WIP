@@ -2,6 +2,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/windows,vscode,c++
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,vscode,c++
 
+### Image Formats ###
+*.ppm
+
 ### C++ ###
 # Prerequisites
 *.d
