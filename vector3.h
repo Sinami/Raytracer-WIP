@@ -45,6 +45,20 @@ class vector3 {
         return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
     }
 
+    bool near_zero() const {
+        const auto s = 1e-8;
+        return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+    }
+
+    // Random utility 
+    inline static vector3 random() {
+        return vector3(random_double(), random_double(), random_double());
+    }
+
+    inline static vector3 random(double min, double max) {
+        return vector3(random_double(min, max), random_double(min, max), random_double(min, max));
+    }
+
     public:
     double e[3];
 };
@@ -99,5 +113,46 @@ inline vector3 cross(const vector3 &u, const vector3 &v) {
 inline vector3 unit_vector(vector3 v) {
     return v / v.length();
 }
+
+// Random function utilities
+vector3 random_in_unit_sphere() {
+    while (true) {
+        auto p = vector3::random(-1,1);
+        if (p.length_squared() >= 1) continue;
+        return p;
+    }
+}
+
+vector3 random_in_unit_disk() {
+    while (true) {
+        auto p = vector3(random_double(-1,1), random_double(-1,1), 0);
+        if (p.length_squared() >= 1) continue;
+        return p;
+    }
+}
+
+vector3 random_unit_vector() {
+    return unit_vector(random_in_unit_sphere());
+}
+
+vector3 random_in_hemisphere( const vector3& normal) {
+    vector3 in_unit_sphere = random_in_unit_sphere();
+    if (dot(in_unit_sphere, normal) > 0.0 ) // In the same hemisphere as normal
+        return in_unit_sphere;
+    else
+        return -in_unit_sphere;
+}
+
+vector3 reflect(const vector3& v, const vector3& n) {
+    return v - 2*dot(v,n)*n;
+}
+
+vector3 refract(const vector3& uv, const vector3& n, double etai_over_etat) {
+    auto cos_theta = fmin(dot(-uv, n), 1.0);
+    vector3 r_out_perp = etai_over_etat * (uv + cos_theta*n);
+    vector3 r_out_parallel = -sqrt(fabs(1.0 -r_out_perp.length_squared())) * n;
+    return r_out_perp + r_out_parallel;
+}
+
 
 #endif
